@@ -29,14 +29,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   coin = object;
   scene.add(coin);
+  
   coin.position.set(1000, -1000, 0); // Start from bottom right
   coin.rotation.set(0, 0, 0);
 
   coin.scale.set(2.2, 2.2, 2.2); 
 
   const starGeometry = new THREE.BufferGeometry();
-    const starMaterial = new THREE.PointsMaterial({ color: 0xffd700, size: 0.1 });
-    const starCount = 1000; // Adjust the number of stars as needed
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffd700, size: 0.2 });
+    const starCount = 2000; // Adjust the number of stars as needed
 
     const starPositions = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount; i++) {

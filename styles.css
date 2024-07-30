@@ -126,6 +126,7 @@ main {
   margin-top: 0;
   font-size: 2em;
   line-height: 1.5;
+  align-items: left;
 }
 
 .right {
