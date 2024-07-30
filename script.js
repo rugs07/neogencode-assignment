@@ -102,8 +102,10 @@ document.addEventListener("DOMContentLoaded", () => {
     gsap.to(coin.rotation, { y: Math.PI * 1.25, duration: 20, ease: "none", repeat: -1 });
 
     // Handle star rotation on click
+    let twinkling = false;
     let rotateDirection = 1;
     container.addEventListener('click', () => {
+      twinkling=!twinkling;
       rotateDirection *= -1; // Toggle rotation direction
       gsap.to(stars.rotation, { y: `+=${Math.PI * 1.25 * rotateDirection}`, duration: 20, ease: "none", repeat: -1 });
       gsap.to(coin.rotation, { y: `+=${Math.PI * 1.25 * rotateDirection}`, duration: 20, ease: "none", repeat: -1 });
@@ -116,7 +118,9 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
     // Update shader time uniform for twinkle effect
-    starMaterial.uniforms.time.value += 0.05;
+    if(twinkling){
+    starMaterial.uniforms.time.value += 0.5;
+    }
   };
 
   animate();
