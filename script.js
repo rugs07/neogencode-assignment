@@ -14,11 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const loader = new THREE.OBJLoader();
   let coin;
 
-  loader.load('./coin.obj', (object) => {
+  loader.load('./coin1.obj', (object) => {
     const goldMaterial = new THREE.MeshStandardMaterial({
       color: 0xffd700, // Gold color
-      metalness: 2.0, // Fully metallic
-      roughness: 0.8, // Smooth surface
+      metalness: 0.4, // Fully metallic
+      roughness: 0.1, // Smooth surface
   });
 
   // Apply the gold material to the loaded object
@@ -33,11 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
   coin.position.set(1000, -1000, 0); // Start from bottom right
   coin.rotation.set(0, 0, 0);
 
-  coin.scale.set(2.2, 2.2, 2.2); 
+  coin.scale.set(0.8, 0.8, 0.8); 
 
   const starGeometry = new THREE.BufferGeometry();
     const starMaterial = new THREE.PointsMaterial({ color: 0xffd700, size: 0.2 });
-    const starCount = 2000; // Adjust the number of stars as needed
+    const starCount = 3000; // Adjust the number of stars as needed
 
     const starPositions = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount; i++) {
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     scene.add(stars);
 
     // Animation to center
-    const targetPosition = { x: 0, y: -18 }; // Target position for both coin and stars
+    const targetPosition = { x: 12, y: -12 }; // Target position for both coin and stars
 
     gsap.to(coin.position, {
       x: targetPosition.x,
@@ -72,10 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Continuous slow rotation of the coin
-    gsap.to(coin.rotation, { y: Math.PI * 1.25, duration: 20, ease: "none", repeat: -1 });
+    gsap.to(coin.rotation, {y: Math.PI * 1.25, duration: 20, ease: "none", repeat: -1 });
   });
 
-  camera.position.z = 15;
+  camera.position.z = 35;
 
   const animate = () => {
     requestAnimationFrame(animate);
