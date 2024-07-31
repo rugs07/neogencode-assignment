@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loader = new THREE.OBJLoader();
   let coin;
 
-  loader.load('./coin1.obj', (object) => {
+  loader.load('./coin3.obj', (object) => {
     const vertices = [];
     object.traverse((child) => {
       if (child.isMesh) {
@@ -36,14 +36,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const pointGeometry = new THREE.BufferGeometry();
     pointGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    const pointMaterial = new THREE.PointsMaterial({ color: 0xffd700, size: Math.random() * 0.1 + 0.05 });
+    const pointMaterial = new THREE.PointsMaterial({ color: 0xffd700, size: Math.random() * 0.1 + 0.005 });
 
     coin = new THREE.Points(pointGeometry, pointMaterial);
     coinScene.add(coin);
 
     coin.position.set(1000, -1000, 0);
     coin.rotation.set(0, 0, 0);
-    coin.scale.set(1, 1,1);
+    coin.scale.set(2, 2,2);
 
     const starGeometry = new THREE.BufferGeometry();
     const starMaterial = new THREE.ShaderMaterial({
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     starsScene.add(stars);
 
     // Animation to center
-    const targetPosition = { x: 0, y: -16 };
+    const targetPosition = { x: 0, y: -1 };
     gsap.to(coin.position, {
       x: targetPosition.x,
       y: targetPosition.y,
