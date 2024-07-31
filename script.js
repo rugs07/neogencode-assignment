@@ -1,22 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / 2 / window.innerHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  const starsScene = new THREE.Scene();
+  const coinScene = new THREE.Scene();
 
-  const container = document.getElementById('model-container');
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  container.appendChild(renderer.domElement);
+  // Stars Renderer
+  const starsRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  const starsContainer = document.getElementById('stars-container');
+  starsRenderer.setSize(starsContainer.clientWidth, starsContainer.clientHeight);
+  starsContainer.appendChild(starsRenderer.domElement);
+
+  // Coin Renderer
+  const coinRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  const coinContainer = document.getElementById('coin-container');
+  coinRenderer.setSize(coinContainer.clientWidth, coinContainer.clientHeight);
+  coinContainer.appendChild(coinRenderer.domElement);
+
+  const camera = new THREE.PerspectiveCamera(75, coinContainer.clientWidth / coinContainer.clientHeight, 0.1, 1000);
 
   const light = new THREE.PointLight(0xffffff, 1, 100);
   light.position.set(0, -18, 10);
-  scene.add(light);
+  coinScene.add(light);
 
   const loader = new THREE.OBJLoader();
   let coin;
 
   loader.load('./coin1.obj', (object) => {
     const vertices = [];
-
     object.traverse((child) => {
       if (child.isMesh) {
         const positions = child.geometry.attributes.position.array;
@@ -28,15 +36,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const pointGeometry = new THREE.BufferGeometry();
     pointGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    const pointMaterial = new THREE.PointsMaterial({ color: 0xffd700, size: Math.random() * 0.1 + 0.0005 });
+    const pointMaterial = new THREE.PointsMaterial({ color: 0xffd700, size: Math.random() * 0.1 + 0.05 });
 
     coin = new THREE.Points(pointGeometry, pointMaterial);
-    scene.add(coin);
+    coinScene.add(coin);
 
-    coin.position.set(1000, -1000, 0); // Start from bottom right
+    coin.position.set(1000, -1000, 0);
     coin.rotation.set(0, 0, 0);
-
-    coin.scale.set(0.8, 0.8, 0.8);
+    coin.scale.set(1, 1,1);
 
     const starGeometry = new THREE.BufferGeometry();
     const starMaterial = new THREE.ShaderMaterial({
@@ -64,22 +71,20 @@ document.addEventListener("DOMContentLoaded", () => {
       transparent: true,
     });
 
-    const starCount = 3000; // Adjust the number of stars as needed
-
+    const starCount = 5000;
     const starPositions = new Float32Array(starCount * 3);
     for (let i = 0; i < starCount; i++) {
-      starPositions[i * 3] = (Math.random() - 0.5) * 100;
-      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+      starPositions[i * 3] = (Math.random() - 0.5) * 200; // Widen the starfield
+      starPositions[i * 3 + 1] = (Math.random() - 0.5) * 200;
       starPositions[i * 3 + 2] = (Math.random() - 0.5) * 100;
     }
 
     starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
     const stars = new THREE.Points(starGeometry, starMaterial);
-    scene.add(stars);
+    starsScene.add(stars);
 
     // Animation to center
-    const targetPosition = { x: 12, y: -12 };
-
+    const targetPosition = { x: 0, y: -16 };
     gsap.to(coin.position, {
       x: targetPosition.x,
       y: targetPosition.y,
@@ -93,20 +98,17 @@ document.addEventListener("DOMContentLoaded", () => {
       duration: 3.5,
       ease: "power2.out",
       onComplete: () => {
-        // Start rotating the stars after they reach the center
         gsap.to(stars.rotation, { y: Math.PI * 1.25, duration: 20, ease: "none", repeat: -1 });
       }
     });
 
-    // Continuous slow rotation of the coin
     gsap.to(coin.rotation, { y: Math.PI * 1.25, duration: 20, ease: "none", repeat: -1 });
 
-    // Handle star rotation on click
     let twinkling = false;
     let rotateDirection = 1;
-    container.addEventListener('click', () => {
+    coinContainer.addEventListener('click', () => {
       twinkling=!twinkling;
-      rotateDirection *= -1; // Toggle rotation direction
+      rotateDirection *= -1;
       gsap.to(stars.rotation, { y: `+=${Math.PI * 1.25 * rotateDirection}`, duration: 20, ease: "none", repeat: -1 });
       gsap.to(coin.rotation, { y: `+=${Math.PI * 1.25 * rotateDirection}`, duration: 20, ease: "none", repeat: -1 });
     });
@@ -116,19 +118,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const animate = () => {
     requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-    // Update shader time uniform for twinkle effect
-    if(twinkling){
-    starMaterial.uniforms.time.value += 0.5;
+    starsRenderer.render(starsScene, camera);
+    coinRenderer.render(coinScene, camera);
+
+    if (twinkling) {
+      starsScene.children.forEach(child => {
+        if (child.isPoints) {
+          child.material.uniforms.time.value += 0.5;
+        }
+      });
     }
   };
 
   animate();
 
-  // Handle window resize
   window.addEventListener('resize', () => {
-    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.aspect = coinContainer.clientWidth / coinContainer.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    coinRenderer.setSize(coinContainer.clientWidth, coinContainer.clientHeight);
   });
 });
